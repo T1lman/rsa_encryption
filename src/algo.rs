@@ -1,8 +1,27 @@
-pub fn euler_totient(p: u128, q: u128) -> u128 {
+pub fn encrypt(msg: Vec<u8>, key: (u128, u128)) -> Vec<u128> {
+    let mut res: Vec<u128> = Vec::new();
+    for i in msg {
+        let encchar = fast_mod_pow(i as u128, key.0, key.1);
+        res.push(encchar);
+    }
+    res
+}
+
+pub fn decrypt(msg: Vec<u128>, key: (u128, u128)) -> Vec<u8> {
+    let mut res: Vec<u8> = Vec::new();
+    for i in msg {
+        let decchar: u128 = fast_mod_pow(i as u128, key.0, key.1);
+        res.push(decchar as u8);
+    }
+
+    res
+}
+
+fn euler_totient(p: u128, q: u128) -> u128 {
     return (p - 1) * (q - 1);
 }
 
-pub fn generate_e(totient: u128, n: u128) -> Vec<u128> {
+fn generate_e(totient: u128, n: u128) -> Vec<u128> {
     let mut res: Vec<u128> = Vec::new();
     for i in 2..totient {
         let gcds: (u128, u128) = (gcd(i, totient), gcd(i, n));
@@ -14,9 +33,9 @@ pub fn generate_e(totient: u128, n: u128) -> Vec<u128> {
     res
 }
 
-pub fn generate_d(totient: u128, e: u128) -> Vec<u128> {
+fn generate_d(totient: u128, e: u128) -> Vec<u128> {
     let mut res: Vec<u128> = Vec::new();
-    for i in 0..totient * e {
+    for i in 0..totient {
         match (i * e) % totient {
             1 => res.push(i),
             _ => {}
@@ -50,7 +69,7 @@ fn check_prime(prime: u128) -> bool {
     true
 }
 
-fn fast_mod_pow(mut base: u128, mut exp: u128, modulus: u128) -> u128 {
+pub fn fast_mod_pow(mut base: u128, mut exp: u128, modulus: u128) -> u128 {
     if modulus == 1 {
         return 0;
     }
@@ -66,7 +85,7 @@ fn fast_mod_pow(mut base: u128, mut exp: u128, modulus: u128) -> u128 {
     result
 }
 
-pub fn xgcd(mut x: isize, mut y: isize) -> (isize, isize, isize) {
+fn xgcd(mut x: isize, mut y: isize) -> (isize, isize, isize) {
     let (mut a0, mut a1, mut b0, mut b1) = (1, 0, 0, 1);
 
     while y != 0 {
@@ -84,7 +103,7 @@ pub fn xgcd(mut x: isize, mut y: isize) -> (isize, isize, isize) {
     (x, a0, b0)
 }
 
-pub fn gcd(a: u128, b: u128) -> u128 {
+fn gcd(a: u128, b: u128) -> u128 {
     match b {
         0 => return a,
         _ => return gcd(b, a % b),
